@@ -95,13 +95,17 @@ bot.command(:fn) do |event|
     json = JSON.parse(response.body)
     stats = json["stats"]
 
-    name = json["epicUserHandle"]
 
     to_print = []
     solo_overview = {}
     duo_overview = {}
     squad_overview = {}
+    season_solo = {}
+    season_duo = {}
+    season_squad = {}
+    lifetime = {}
 
+    name = json["epicUserHandle"]
 
     solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
     solo_overview["wins"] = stats["p2"]["top1"]["value"]
@@ -125,30 +129,45 @@ bot.command(:fn) do |event|
 
     squad_overview["trn"] = stats["p9"]["trnRating"]["value"]
     squad_overview["wins"] = stats["p9"]["top1"]["value"]
-    squad_overview["top3"] = stats["p9"]["top3"]["value"]
-    squad_overview["top6"] = stats["p9"]["top6"]["value"]
     squad_overview["kd"] = stats["p9"]["kd"]["value"]
     squad_overview["win_rate"] = stats["p9"]["winRatio"]["value"]
     squad_overview["matches"] = stats["p9"]["matches"]["value"]
     squad_overview["kills"] = stats["p9"]["kills"]["value"]
     squad_overview["kpg"] = stats["p9"]["kpg"]["value"]
 
+    season_solo["trn"] = stats["curr_p2"]["trnRating"]["value"]
+    season_solo["wins"] = stats["curr_p2"]["top1"]["value"]
+    season_solo["kd"] = stats["curr_p2"]["kd"]["value"]
+    season_solo["win_rate"] = stats["curr_p2"]["winRatio"]["value"]
+    season_solo["matches"] = stats["curr_p2"]["matches"]["value"]
+    season_solo["kills"] = stats["curr_p2"]["kills"]["value"]
+    season_solo["kpg"] = stats["curr_p2"]["kpg"]["value"]
+
+    season_duo["trn"] = stats["curr_p10"]["trnRating"]["value"]
+    season_duo["wins"] = stats["curr_p10"]["top1"]["value"]
+    season_duo["kd"] = stats["curr_p10"]["kd"]["value"]
+    season_duo["win_rate"] = stats["curr_p10"]["winRatio"]["value"]
+    season_duo["matches"] = stats["curr_p10"]["matches"]["value"]
+    season_duo["kills"] = stats["curr_p10"]["kills"]["value"]
+    season_duo["kpg"] = stats["curr_p10"]["kpg"]["value"]
+
+    season_squad["trn"] = stats["curr_p9"]["trnRating"]["value"]
+    season_squad["wins"] = stats["curr_p9"]["top1"]["value"]
+    season_squad["kd"] = stats["curr_p9"]["kd"]["value"]
+    season_squad["win_rate"] = stats["curr_p9"]["winRatio"]["value"]
+    season_squad["matches"] = stats["curr_p9"]["matches"]["value"]
+    season_squad["kills"] = stats["curr_p9"]["kills"]["value"]
+    season_squad["kpg"] = stats["curr_p9"]["kpg"]["value"]
+
+    lifetime["matches"] = json["lifeTimeStats"][7]["value"]
+    lifetime["wins"] = json["lifeTimeStats"][8]["value"]
+    lifetime["win_rate"] = json["lifeTimeStats"][9]["value"]
+    lifetime["kills"] = json["lifeTimeStats"][10]["value"]
+    lifetime["kd"] = json["lifeTimeStats"][11]["value"]
+
     to_print = solo_overview.values + duo_overview.values + squad_overview.values
 
-    event.respond to_print.join("\n")
-
-
-
-
-
-
-
-
-
-    puts solo_overview
-
-    
-
+    event.respond to_print.join("\n")    
 
     # p2 is solo overview
     # p10 is duo overview
@@ -157,10 +176,6 @@ bot.command(:fn) do |event|
     # curr_p10 is curr season duo
     # curr_p9 is curr season squad
     #  "lifeTimeStats" 
-
-
-
-
 end
 
 bot.run
