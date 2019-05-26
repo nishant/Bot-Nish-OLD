@@ -2,6 +2,11 @@ require 'discordrb'
 require 'open-uri'
 require 'json'
 require 'psych'
+require 'httparty'
+require 'rubygems'
+require 'excon'    
+
+
 
 bot = Discordrb::Commands::CommandBot.new(
     token: 'NTgxOTA5OTM3MTY5NjI5MTk1.XOmOyA.6obFYsF1bBd2_KNiXALvSXqNG7g',
@@ -81,6 +86,62 @@ bot.command(:stock) do |event|
     to_print << "Low ................. " + '%.2f' % info["3. low"].to_f.ceil(2).to_s
 
     event.respond to_print.join("\n")
+end
+
+bot.command(:fn) do |event|
+    platform = event.message.content.split(' ')[1]
+    username = event.message.content.split(' ')[2..-1].join(" ").gsub(' ', '%20')
+
+    url = "https://api.fortnitetracker.com/v1/profile/#{platform}/#{username}/"
+    headers = {"TRN-Api-Key": "4e622ec4-f903-49ee-92b6-cbdf5c2c5488"}
+    response = HTTParty.get(url, headers: headers)
+
+    json = JSON.parse(response.body)
+    stats = json["stats"]
+
+    name = json["epicUserHandle"]
+
+    to_print = []
+    solo_overview = {}
+
+    solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
+    solo_overview["wins"] = stats["p2"]["top1"]["value"]
+    solo_overview["top10"] = stats["p2"]["top10"]["value"]
+    solo_overview["top25"] = stats["p2"]["top25"]["value"]
+    solo_overview["kd"] = stats["p2"]["kd"]["value"]
+    solo_overview["win_rate"] = stats["p2"]["winRatio"]["value"]
+    solo_overview["matches"] = stats["p2"]["matches"]["value"]
+    solo_overview["kills"] = stats["p2"]["kills"]["value"]
+    solo_overview["kpg"] = stats["p2"]["kpg"]["value"]
+
+    to_print = solo_overview.values
+    
+    event.respond to_print.join("\n")
+
+
+
+
+
+
+
+
+
+    puts solo_overview
+
+    
+
+
+    # p2 is solo overview
+    # p10 is duo overview
+    # p9 is squad overview
+    # curr_p2 is curr season solo
+    # curr_p10 is curr season duo
+    # curr_p9 is curr season squad
+    #  "lifeTimeStats" 
+
+
+
+
 end
 
 bot.run
