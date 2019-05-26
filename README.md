@@ -1,2 +1,2 @@
-# NN-Bot
-A useful discord bot made by Nish and Nick in Python
+# Bot Nish
+A useful discord bot made in Ruby
