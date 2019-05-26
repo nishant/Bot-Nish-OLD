@@ -2,11 +2,7 @@ require 'discordrb'
 require 'open-uri'
 require 'json'
 require 'psych'
-require 'httparty'
-require 'rubygems'
-require 'excon'    
-
-
+require 'httparty'   
 
 bot = Discordrb::Commands::CommandBot.new(
     token: 'NTgxOTA5OTM3MTY5NjI5MTk1.XOmOyA.6obFYsF1bBd2_KNiXALvSXqNG7g',
@@ -103,6 +99,9 @@ bot.command(:fn) do |event|
 
     to_print = []
     solo_overview = {}
+    duo_overview = {}
+    squad_overview = {}
+
 
     solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
     solo_overview["wins"] = stats["p2"]["top1"]["value"]
@@ -114,8 +113,28 @@ bot.command(:fn) do |event|
     solo_overview["kills"] = stats["p2"]["kills"]["value"]
     solo_overview["kpg"] = stats["p2"]["kpg"]["value"]
 
-    to_print = solo_overview.values
-    
+    duo_overview["trn"] = stats["p10"]["trnRating"]["value"]
+    duo_overview["wins"] = stats["p10"]["top1"]["value"]
+    duo_overview["top5"] = stats["p10"]["top5"]["value"]
+    duo_overview["top12"] = stats["p10"]["top12"]["value"]
+    duo_overview["kd"] = stats["p10"]["kd"]["value"]
+    duo_overview["win_rate"] = stats["p10"]["winRatio"]["value"]
+    duo_overview["matches"] = stats["p10"]["matches"]["value"]
+    duo_overview["kills"] = stats["p10"]["kills"]["value"]
+    duo_overview["kpg"] = stats["p10"]["kpg"]["value"]
+
+    squad_overview["trn"] = stats["p9"]["trnRating"]["value"]
+    squad_overview["wins"] = stats["p9"]["top1"]["value"]
+    squad_overview["top3"] = stats["p9"]["top3"]["value"]
+    squad_overview["top6"] = stats["p9"]["top6"]["value"]
+    squad_overview["kd"] = stats["p9"]["kd"]["value"]
+    squad_overview["win_rate"] = stats["p9"]["winRatio"]["value"]
+    squad_overview["matches"] = stats["p9"]["matches"]["value"]
+    squad_overview["kills"] = stats["p9"]["kills"]["value"]
+    squad_overview["kpg"] = stats["p9"]["kpg"]["value"]
+
+    to_print = solo_overview.values + duo_overview.values + squad_overview.values
+
     event.respond to_print.join("\n")
 
 
