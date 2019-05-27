@@ -90,7 +90,7 @@ end
 
 def build_ftn_arr(base, source_keys, dst_keys)
 
-    output = []
+    output = {}
 
     for i in 0..(source_keys.length - 1) do
         output[dst_keys[i]] = base[source_keys[i]]["value"]
