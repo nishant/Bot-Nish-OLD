@@ -2,7 +2,7 @@ require 'discordrb'
 require 'open-uri'
 require 'json'
 require 'psych'
-require 'httparty'   
+require 'httparty'
 
 bot = Discordrb::Commands::CommandBot.new(
     token: 'NTgxOTA5OTM3MTY5NjI5MTk1.XOmOyA.6obFYsF1bBd2_KNiXALvSXqNG7g',
@@ -90,7 +90,7 @@ end
 
 def build_ftn_arr(base, source_keys, dst_keys)
 
-    output = []
+    output = {}
 
     for i in 0..(source_keys.length - 1) do
         output[dst_keys[i]] = base[source_keys[i]]["value"]
@@ -185,10 +185,9 @@ bot.command(:fn) do |event|
         )
     end
 
-
     event.channel.send_embed("") do |embed|
         embed.title = "Fortnite Statistics for #{name}"
-        embed.url =     url = URI.encode("https://fortnitetracker.com/profile/#{platform}/#{username}/")
+        embed.url = URI.encode("https://fortnitetracker.com/profile/#{platform}/#{username}/")
         embed.timestamp = Time.now
         
         embed.footer = Discordrb::Webhooks::EmbedFooter.new(
@@ -197,11 +196,11 @@ bot.command(:fn) do |event|
         )
     
         embed.add_field(
-            name: "Lifetime Data",
+            name: "Lifetime Overview",
             value:  "Wins ............... " + lifetime["wins"] + "\n" +
                     "Kills ................. " + lifetime["kills"] + "\n" +
                     "K/D ................. " + lifetime["kd"] + "\n" +
-                    "Win Rate ........ " + lifetime["win_rate"] + "\n" +
+                    "Win Rate ........ " + lifetime["win_rate"] + "%\n" +
                     "Matches ......... " + lifetime["matches"] + "\n",
             inline: true
         )
@@ -217,8 +216,77 @@ bot.command(:fn) do |event|
             value:  "Wins ............... " + season_wins + "\n" +
                     "Kills ................. " + season_kills + "\n" +
                     "K/D ................. " + season_kd + "\n" +
-                    "Win Rate ........ " + season_win_rate + "\n" +
+                    "Win Rate ........ " + season_win_rate + "%\n" +
                     "Matches ......... " + season_matches + "\n",
+            inline: true
+        )
+
+        embed.add_field(
+            name: "Lifetime Solos",
+            value:  "Wins ............... " + solo_overview["wins"] + "\n" +
+                    "Kills ................. " + solo_overview["kills"] + "\n" +
+                    "K/D ................. " + solo_overview["kd"] + "\n" +
+                    "Win Rate ........ " + solo_overview["win_rate"] + "%\n" +
+                    "Matches ......... " + solo_overview["matches"] + "\n" +
+                    "Kills Per Match ....... " + solo_overview["matches"] + "\n",
+            inline: false
+        )
+
+        embed.add_field(
+            name: "Lifetime Duos",
+            value:  "Wins ............... " + duo_overview["wins"] + "\n" +
+                    "Kills ................. " + duo_overview["kills"] + "\n" +
+                    "K/D ................. " + duo_overview["kd"] + "\n" +
+                    "Win Rate ........ " + duo_overview["win_rate"] + "%\n" +
+                    "Matches ......... " + duo_overview["matches"] + "\n" +
+                    "Kills Per Match ....... " + duo_overview["matches"] + "\n",
+            inline: true
+        )
+
+        embed.add_field(
+            name: "Lifetime Squads",
+            value:  "Wins ............... " + squad_overview["wins"] + "\n" +
+                    "Kills ................. " + squad_overview["kills"] + "\n" +
+                    "K/D ................. " + squad_overview["kd"] + "\n" +
+                    "Win Rate ........ " + squad_overview["win_rate"] + "%\n" +
+                    "Matches ......... " + squad_overview["matches"] + "\n" +
+                    "Kills Per Match ....... " + squad_overview["matches"] + "\n",
+            inline: true
+        )
+
+        embed.add_field(
+            name: "Season Solos",
+            value:  "Wins ............... " + season_solo["wins"] + "\n" +
+                    "Kills ................. " + season_solo["kills"] + "\n" +
+                    "K/D ................. " + season_solo["kd"] + "\n" +
+                    "Win Rate ........ " + season_solo["win_rate"] + "%\n" +
+                    "Matches ......... " + season_solo["matches"] + "\n" +
+                    "Kills Per Match ....... " + season_solo["matches"] + "\n" +
+                    "TRN ................ " + season_solo["trn"] + "\n",
+            inline: false
+        )
+
+        embed.add_field(
+            name: "Season Duos",
+            value:  "Wins ............... " + season_duo["wins"] + "\n" +
+                    "Kills ................. " + season_duo["kills"] + "\n" +
+                    "K/D ................. " + season_duo["kd"] + "\n" +
+                    "Win Rate ........ " + season_duo["win_rate"] + "%\n" +
+                    "Matches ......... " + season_duo["matches"] + "\n" +
+                    "Kills Per Match ....... " + season_duo["matches"] + "\n" +
+                    "TRN ................ " + season_duo["trn"] + "\n",
+            inline: true
+        )
+
+        embed.add_field(
+            name: "Season Squads",
+            value:  "Wins ............... " + season_squad["wins"] + "\n" +
+                    "Kills ................. " + season_squad["kills"] + "\n" +
+                    "K/D ................. " + season_squad["kd"] + "\n" +
+                    "Win Rate ........ " + season_squad["win_rate"] + "%\n" +
+                    "Matches ......... " + season_squad["matches"] + "\n" +
+                    "Kills Per Match ....... " + season_squad["matches"] + "\n" +
+                    "TRN ................ " + season_squad["trn"] + "\n",
             inline: true
         )
     end
