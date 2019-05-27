@@ -86,15 +86,14 @@ end
 
 bot.command(:fn) do |event|
     platform = event.message.content.split(' ')[1]
-    username = event.message.content.split(' ')[2..-1].join(" ").gsub(' ', '%20')
-
-    url = "https://api.fortnitetracker.com/v1/profile/#{platform}/#{username}/"
+    username = event.message.content.split(' ')[2..-1].join(" ")
+    
+    url = URI.encode("https://api.fortnitetracker.com/v1/profile/#{platform}/#{username}/")
     headers = {"TRN-Api-Key": "4e622ec4-f903-49ee-92b6-cbdf5c2c5488"}
     response = HTTParty.get(url, headers: headers)
 
     json = JSON.parse(response.body)
     stats = json["stats"]
-
 
     to_print = []
     solo_overview = {}
@@ -107,75 +106,115 @@ bot.command(:fn) do |event|
 
     name = json["epicUserHandle"]
 
-    solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
-    solo_overview["wins"] = stats["p2"]["top1"]["value"]
-    solo_overview["top10"] = stats["p2"]["top10"]["value"]
-    solo_overview["top25"] = stats["p2"]["top25"]["value"]
-    solo_overview["kd"] = stats["p2"]["kd"]["value"]
-    solo_overview["win_rate"] = stats["p2"]["winRatio"]["value"]
-    solo_overview["matches"] = stats["p2"]["matches"]["value"]
-    solo_overview["kills"] = stats["p2"]["kills"]["value"]
-    solo_overview["kpg"] = stats["p2"]["kpg"]["value"]
+    if stats["p2"] != nil
+        solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
+        solo_overview["wins"] = stats["p2"]["top1"]["value"]
+        solo_overview["top10"] = stats["p2"]["top10"]["value"]
+        solo_overview["top25"] = stats["p2"]["top25"]["value"]
+        solo_overview["kd"] = stats["p2"]["kd"]["value"]
+        solo_overview["win_rate"] = stats["p2"]["winRatio"]["value"]
+        solo_overview["matches"] = stats["p2"]["matches"]["value"]
+        solo_overview["kills"] = stats["p2"]["kills"]["value"]
+        solo_overview["kpg"] = stats["p2"]["kpg"]["value"]
+    end
 
-    duo_overview["trn"] = stats["p10"]["trnRating"]["value"]
-    duo_overview["wins"] = stats["p10"]["top1"]["value"]
-    duo_overview["top5"] = stats["p10"]["top5"]["value"]
-    duo_overview["top12"] = stats["p10"]["top12"]["value"]
-    duo_overview["kd"] = stats["p10"]["kd"]["value"]
-    duo_overview["win_rate"] = stats["p10"]["winRatio"]["value"]
-    duo_overview["matches"] = stats["p10"]["matches"]["value"]
-    duo_overview["kills"] = stats["p10"]["kills"]["value"]
-    duo_overview["kpg"] = stats["p10"]["kpg"]["value"]
+    if stats["p10"] != nil
+        duo_overview["trn"] = stats["p10"]["trnRating"]["value"]
+        duo_overview["wins"] = stats["p10"]["top1"]["value"]
+        duo_overview["top5"] = stats["p10"]["top5"]["value"]
+        duo_overview["top12"] = stats["p10"]["top12"]["value"]
+        duo_overview["kd"] = stats["p10"]["kd"]["value"]
+        duo_overview["win_rate"] = stats["p10"]["winRatio"]["value"]
+        duo_overview["matches"] = stats["p10"]["matches"]["value"]
+        duo_overview["kills"] = stats["p10"]["kills"]["value"]
+        duo_overview["kpg"] = stats["p10"]["kpg"]["value"]
+    end
 
-    squad_overview["trn"] = stats["p9"]["trnRating"]["value"]
-    squad_overview["wins"] = stats["p9"]["top1"]["value"]
-    squad_overview["kd"] = stats["p9"]["kd"]["value"]
-    squad_overview["win_rate"] = stats["p9"]["winRatio"]["value"]
-    squad_overview["matches"] = stats["p9"]["matches"]["value"]
-    squad_overview["kills"] = stats["p9"]["kills"]["value"]
-    squad_overview["kpg"] = stats["p9"]["kpg"]["value"]
+    if stats["p9"] != nil
+        squad_overview["trn"] = stats["p9"]["trnRating"]["value"]
+        squad_overview["wins"] = stats["p9"]["top1"]["value"]
+        squad_overview["kd"] = stats["p9"]["kd"]["value"]
+        squad_overview["win_rate"] = stats["p9"]["winRatio"]["value"]
+        squad_overview["matches"] = stats["p9"]["matches"]["value"]
+        squad_overview["kills"] = stats["p9"]["kills"]["value"]
+        squad_overview["kpg"] = stats["p9"]["kpg"]["value"]
+    end
 
-    season_solo["trn"] = stats["curr_p2"]["trnRating"]["value"]
-    season_solo["wins"] = stats["curr_p2"]["top1"]["value"]
-    season_solo["kd"] = stats["curr_p2"]["kd"]["value"]
-    season_solo["win_rate"] = stats["curr_p2"]["winRatio"]["value"]
-    season_solo["matches"] = stats["curr_p2"]["matches"]["value"]
-    season_solo["kills"] = stats["curr_p2"]["kills"]["value"]
-    season_solo["kpg"] = stats["curr_p2"]["kpg"]["value"]
+    if stats["curr_p2"] != nil
+        season_solo["trn"] = stats["curr_p2"]["trnRating"]["value"]
+        season_solo["wins"] = stats["curr_p2"]["top1"]["value"]
+        season_solo["kd"] = stats["curr_p2"]["kd"]["value"]
+        season_solo["win_rate"] = stats["curr_p2"]["winRatio"]["value"]
+        season_solo["matches"] = stats["curr_p2"]["matches"]["value"]
+        season_solo["kills"] = stats["curr_p2"]["kills"]["value"]
+        season_solo["kpg"] = stats["curr_p2"]["kpg"]["value"]
+    end
 
-    season_duo["trn"] = stats["curr_p10"]["trnRating"]["value"]
-    season_duo["wins"] = stats["curr_p10"]["top1"]["value"]
-    season_duo["kd"] = stats["curr_p10"]["kd"]["value"]
-    season_duo["win_rate"] = stats["curr_p10"]["winRatio"]["value"]
-    season_duo["matches"] = stats["curr_p10"]["matches"]["value"]
-    season_duo["kills"] = stats["curr_p10"]["kills"]["value"]
-    season_duo["kpg"] = stats["curr_p10"]["kpg"]["value"]
+    if stats["curr_p10"] != nil
+        season_duo["trn"] = stats["curr_p10"]["trnRating"]["value"]
+        season_duo["wins"] = stats["curr_p10"]["top1"]["value"]
+        season_duo["kd"] = stats["curr_p10"]["kd"]["value"]
+        season_duo["win_rate"] = stats["curr_p10"]["winRatio"]["value"]
+        season_duo["matches"] = stats["curr_p10"]["matches"]["value"]
+        season_duo["kills"] = stats["curr_p10"]["kills"]["value"]
+        season_duo["kpg"] = stats["curr_p10"]["kpg"]["value"]
+    end
 
-    season_squad["trn"] = stats["curr_p9"]["trnRating"]["value"]
-    season_squad["wins"] = stats["curr_p9"]["top1"]["value"]
-    season_squad["kd"] = stats["curr_p9"]["kd"]["value"]
-    season_squad["win_rate"] = stats["curr_p9"]["winRatio"]["value"]
-    season_squad["matches"] = stats["curr_p9"]["matches"]["value"]
-    season_squad["kills"] = stats["curr_p9"]["kills"]["value"]
-    season_squad["kpg"] = stats["curr_p9"]["kpg"]["value"]
+    if stats["curr_p9"] != nil
+        season_squad["trn"] = stats["curr_p9"]["trnRating"]["value"]
+        season_squad["wins"] = stats["curr_p9"]["top1"]["value"]
+        season_squad["kd"] = stats["curr_p9"]["kd"]["value"]
+        season_squad["win_rate"] = stats["curr_p9"]["winRatio"]["value"]
+        season_squad["matches"] = stats["curr_p9"]["matches"]["value"]
+        season_squad["kills"] = stats["curr_p9"]["kills"]["value"]
+        season_squad["kpg"] = stats["curr_p9"]["kpg"]["value"]
+    end
 
-    lifetime["matches"] = json["lifeTimeStats"][7]["value"]
-    lifetime["wins"] = json["lifeTimeStats"][8]["value"]
-    lifetime["win_rate"] = json["lifeTimeStats"][9]["value"]
-    lifetime["kills"] = json["lifeTimeStats"][10]["value"]
-    lifetime["kd"] = json["lifeTimeStats"][11]["value"]
+    if json["lifeTimeStats"] != nil
+        lifetime["matches"] = json["lifeTimeStats"][7]["value"]
+        lifetime["wins"] = json["lifeTimeStats"][8]["value"]
+        lifetime["win_rate"] = json["lifeTimeStats"][9]["value"]
+        lifetime["kills"] = json["lifeTimeStats"][10]["value"]
+        lifetime["kd"] = json["lifeTimeStats"][11]["value"]
+    end
 
-    to_print = solo_overview.values + duo_overview.values + squad_overview.values
 
-    event.respond to_print.join("\n")    
+    event.channel.send_embed("") do |embed|
+        embed.title = "Fortnite Statistics for #{name}"
+        embed.url =     url = URI.encode("https://fortnitetracker.com/profile/#{platform}/#{username}/")
+        embed.timestamp = Time.now
+        
+        embed.footer = Discordrb::Webhooks::EmbedFooter.new(
+            text: "Data from Fortnite Tracker API", 
+            icon_url: "https://img.icons8.com/color/420/fortnite.png"
+        )
+    
+        embed.add_field(
+            name: "Lifetime Data",
+            value:  "Wins ............... " + lifetime["wins"] + "\n" +
+                    "Kills ................. " + lifetime["kills"] + "\n" +
+                    "K/D ................. " + lifetime["kd"] + "\n" +
+                    "Win Rate ........ " + lifetime["win_rate"] + "\n" +
+                    "Matches ......... " + lifetime["matches"] + "\n",
+            inline: true
+        )
 
-    # p2 is solo overview
-    # p10 is duo overview
-    # p9 is squad overview
-    # curr_p2 is curr season solo
-    # curr_p10 is curr season duo
-    # curr_p9 is curr season squad
-    #  "lifeTimeStats" 
+        season_wins = (season_solo["wins"].to_i + season_duo["wins"].to_i + season_squad["wins"].to_i).to_s
+        season_matches = (season_solo["matches"].to_i + season_duo["matches"].to_i + season_squad["matches"].to_i).to_s
+        season_win_rate = (100 * (season_wins.to_f / season_matches.to_f)).ceil(2).to_s
+        season_kills = (season_solo["kills"].to_i + season_duo["kills"].to_i + season_squad["kills"].to_i).to_s
+        season_kd = (season_kills.to_f / (season_matches.to_f - season_wins.to_f)).ceil(2).to_s
+
+        embed.add_field(
+            name: "Season Overview",
+            value:  "Wins ............... " + season_wins + "\n" +
+                    "Kills ................. " + season_kills + "\n" +
+                    "K/D ................. " + season_kd + "\n" +
+                    "Win Rate ........ " + season_win_rate + "\n" +
+                    "Matches ......... " + season_matches + "\n",
+            inline: true
+        )
+    end
 end
 
 bot.run
