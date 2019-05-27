@@ -126,8 +126,8 @@ bot.command(:fn) do |event|
         
         solo_overview = build_ftn_arr(
             stats["p2"], 
-            ["trnRating", "top1", "top10", "top25", "kd", "winRatio", "matches", "kills", "kpg"],
-            ["trn",       "wins", "top10", "top25", "kd", "win_rate", "matches", "kills", "kpg"]
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
         )
     end
 
@@ -135,8 +135,8 @@ bot.command(:fn) do |event|
 
         duo_overview = build_ftn_arr(
             stats["p10"],
-            ["trnRating", "top1", "top5", "top12", "kd", "winRatio", "matches", "kills", "kpg"],
-            ["trn",       "wins", "top5", "top12", "kd", "win_rate", "matches", "kills", "kpg"]
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
         )
     end
 
