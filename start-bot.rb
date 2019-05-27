@@ -121,7 +121,6 @@ bot.command(:fn) do |event|
     name = json["epicUserHandle"]
 
     if stats["p2"] != nil
-        
         solo_overview = build_ftn_arr(
             stats["p2"], 
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -130,7 +129,6 @@ bot.command(:fn) do |event|
     end
 
     if stats["p10"] != nil
-
         duo_overview = build_ftn_arr(
             stats["p10"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -139,7 +137,6 @@ bot.command(:fn) do |event|
     end
 
     if stats["p9"] != nil
-
         squad_overview = build_ftn_arr(
             stats["p9"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -148,7 +145,6 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p2"] != nil
-
         season_solo = build_ftn_arr(
             stats["curr_p2"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -157,7 +153,6 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p10"] != nil
-
         season_duo = build_ftn_arr(
             stats["curr_p10"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -166,7 +161,6 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p9"] != nil
-
         season_squad = build_ftn_arr(
             stats["curr_p9"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
@@ -175,7 +169,6 @@ bot.command(:fn) do |event|
     end
 
     if json["lifeTimeStats"] != nil
-        
         lifetime = build_ftn_arr(
             json["lifeTimeStats"],
             [7, 8, 9, 10, 11],
@@ -215,7 +208,7 @@ bot.command(:fn) do |event|
                     "Kills .......................... " + season_kills + "\n" +
                     "K/D .......................... " + season_kd + "\n" +
                     "Win Rate ................. " + season_win_rate + "%\n" +
-                    "Matches .................. " + season_matches + "\n",
+                    "Matches ..................c " + season_matches + "\n",
             inline: true
         )
 
@@ -313,7 +306,6 @@ bot.command(:fn) do |event|
             inline: true
         )
     end
-
 end
 
 bot.run
