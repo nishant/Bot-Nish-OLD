@@ -88,7 +88,7 @@ bot.command(:stock) do |event|
     event.respond to_print.join("\n")
 end
 
-def build_ftn_arr(base, source_keys, dst_keys)
+def build_fn_arr(base, source_keys, dst_keys)
     output = {}
 
     for i in 0..(source_keys.length - 1) do
@@ -98,7 +98,7 @@ def build_ftn_arr(base, source_keys, dst_keys)
     return output
 end
 
-bot.command(:fn) do |event|
+def fn_stats(event)
     platform = event.message.content.split(' ')[1]
     username = event.message.content.split(' ')[2..-1].join(" ")
     
@@ -109,19 +109,14 @@ bot.command(:fn) do |event|
     json = JSON.parse(response.body)
     stats = json["stats"]
 
-    to_print = []
-    solo_overview = {}
-    duo_overview = {}
-    squad_overview = {}
-    season_solo = {}
-    season_duo = {}
-    season_squad = {}
     lifetime = {}
+    solo_overview = duo_overview = squad_overview = {}
+    season_solo = season_duo = season_squad = {}
 
     name = json["epicUserHandle"]
 
     if stats["p2"] != nil
-        solo_overview = build_ftn_arr(
+        solo_overview = build_fn_arr(
             stats["p2"], 
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -129,7 +124,7 @@ bot.command(:fn) do |event|
     end
 
     if stats["p10"] != nil
-        duo_overview = build_ftn_arr(
+        duo_overview = build_fn_arr(
             stats["p10"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -137,7 +132,7 @@ bot.command(:fn) do |event|
     end
 
     if stats["p9"] != nil
-        squad_overview = build_ftn_arr(
+        squad_overview = build_fn_arr(
             stats["p9"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -145,7 +140,7 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p2"] != nil
-        season_solo = build_ftn_arr(
+        season_solo = build_fn_arr(
             stats["curr_p2"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -153,7 +148,7 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p10"] != nil
-        season_duo = build_ftn_arr(
+        season_duo = build_fn_arr(
             stats["curr_p10"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -161,7 +156,7 @@ bot.command(:fn) do |event|
     end
 
     if stats["curr_p9"] != nil
-        season_squad = build_ftn_arr(
+        season_squad = build_fn_arr(
             stats["curr_p9"],
             ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
             ["trn", "wins", "kd", "win_rate", "matches", "kills", "kpg"]
@@ -169,7 +164,7 @@ bot.command(:fn) do |event|
     end
 
     if json["lifeTimeStats"] != nil
-        lifetime = build_ftn_arr(
+        lifetime = build_fn_arr(
             json["lifeTimeStats"],
             [7, 8, 9, 10, 11],
             ["matches", "wins", "win_rate", "kills", "kd"]
@@ -305,6 +300,55 @@ bot.command(:fn) do |event|
             value:  "\uFEFF",
             inline: true
         )
+    end
+end
+
+def fn_shop(event)
+    url = URI.encode("https://api.fortnitetracker.com/v1/store/")
+    headers = {"TRN-Api-Key": "4e622ec4-f903-49ee-92b6-cbdf5c2c5488"}
+    response = HTTParty.get(url, headers: headers)
+
+    items = JSON.parse(response.body)
+    temp = {}
+
+    # num items in shop is not constant, loop to get all
+    items.each_with_index do |item, idx|
+        item.delete("manifestId")
+        item.delete("storeCategory")
+        item.delete("rarity")
+        temp[idx] = item
+    end
+    
+    items = temp
+
+    event.channel.send_embed("") do |embed|
+        embed.title = "Current Fortnite Item Shop"
+        embed.url = URI.encode("https://fnbr.co/shop")
+        embed.timestamp = Time.now
+        
+        embed.footer = Discordrb::Webhooks::EmbedFooter.new(
+            text: "Data from Fortnite Tracker\nItem Details at FNBR", 
+            icon_url: "https://image.fnbr.co/price/icon_vbucks_50x.png"
+        )
+
+        items.each do |k,v|
+            embed.add_field(
+                name: "Name .......... " + v["name"],
+                value: "Price ........... " + v["vBucks"].to_s,
+                inline: true
+            )
+        end
+    end
+    items.each do |k,v|
+        event.send(v["imageUrl"])
+    end
+end
+
+bot.command(:fn) do |event|
+    if event.message.content.split(' ')[1] == 'shop'
+        fn_shop(event)
+    else
+        fn_stats(event)
     end
 end
 
