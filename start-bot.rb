@@ -35,6 +35,10 @@ bot.command(:sum) do |event|
     event.respond numbers.map(&:to_i).reduce(0, :+)
 end
 
+def kelvin_to_fahrenheit(value)
+    return (((value.to_f - 273) * 9 / 5) + 32).ceil(2)
+end
+
 bot.command(:weather) do |event|
     api_key = '5be3960bf306ce17c9c742f07c351972'
     zip = event.message.content.split(' ')[1]
@@ -44,12 +48,12 @@ bot.command(:weather) do |event|
 
     to_print = []
     to_print << "Location: ............. " + weather_data["name"].to_s.downcase
-    to_print << "Temperature: ..... " + (((weather_data["main"]["temp"].to_f - 273) * 9 / 5) + 32).ceil(2).to_s + ' °F'
+    to_print << "Temperature: ..... " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F'
     to_print << "Weather: ............. " + weather_data["weather"][0]["main"].to_s.downcase
     to_print << "Description: ........ " + weather_data["weather"][0]["description"].to_s
     to_print << "Humidity: ............ " + weather_data["main"]["humidity"].to_s + '%'
-    to_print << "Low: ...................... " + (((weather_data["main"]["temp_min"].to_f - 273) * 9 / 5) + 32).ceil(2).to_s + ' °F'
-    to_print << "High: ..................... " + (((weather_data["main"]["temp_max"].to_f - 273) * 9 / 5) + 32).ceil(2).to_s + ' °F'
+    to_print << "Low: ...................... " + kelvin_to_fahrenheit(weather_data["main"]["temp_min"]).to_s + ' °F'
+    to_print << "High: ..................... " + kelvin_to_fahrenheit(weather_data["main"]["temp_max"]).to_s + ' °F'
     to_print << "Wind: ................... " + weather_data["wind"]["speed"].to_s + " mph"
     to_print << "Sunrise: ................ " + Time.at((weather_data["sys"]["sunrise"].to_f)).strftime("%l:%M %p").to_s.lstrip()
     to_print << "Sunset: ................. " + Time.at((weather_data["sys"]["sunset"].to_f)).strftime("%l:%M %p").to_s.lstrip()
@@ -84,6 +88,18 @@ bot.command(:stock) do |event|
     event.respond to_print.join("\n")
 end
 
+def build_ftn_arr(base, source_keys, dst_keys)
+
+    output = []
+
+    for i in 0..(source_keys.length - 1) do
+        output[dst_keys[i]] = base[source_keys[i]]["value"]
+    end
+    
+    return output
+
+end
+
 bot.command(:fn) do |event|
     platform = event.message.content.split(' ')[1]
     username = event.message.content.split(' ')[2..-1].join(" ")
@@ -107,75 +123,66 @@ bot.command(:fn) do |event|
     name = json["epicUserHandle"]
 
     if stats["p2"] != nil
-        solo_overview["trn"] = stats["p2"]["trnRating"]["value"]
-        solo_overview["wins"] = stats["p2"]["top1"]["value"]
-        solo_overview["top10"] = stats["p2"]["top10"]["value"]
-        solo_overview["top25"] = stats["p2"]["top25"]["value"]
-        solo_overview["kd"] = stats["p2"]["kd"]["value"]
-        solo_overview["win_rate"] = stats["p2"]["winRatio"]["value"]
-        solo_overview["matches"] = stats["p2"]["matches"]["value"]
-        solo_overview["kills"] = stats["p2"]["kills"]["value"]
-        solo_overview["kpg"] = stats["p2"]["kpg"]["value"]
+        
+        solo_overview = build_ftn_arr(
+            stats["p2"], 
+            ["trnRating", "top1", "top10", "top25", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "top10", "top25", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if stats["p10"] != nil
-        duo_overview["trn"] = stats["p10"]["trnRating"]["value"]
-        duo_overview["wins"] = stats["p10"]["top1"]["value"]
-        duo_overview["top5"] = stats["p10"]["top5"]["value"]
-        duo_overview["top12"] = stats["p10"]["top12"]["value"]
-        duo_overview["kd"] = stats["p10"]["kd"]["value"]
-        duo_overview["win_rate"] = stats["p10"]["winRatio"]["value"]
-        duo_overview["matches"] = stats["p10"]["matches"]["value"]
-        duo_overview["kills"] = stats["p10"]["kills"]["value"]
-        duo_overview["kpg"] = stats["p10"]["kpg"]["value"]
+
+        duo_overview = build_ftn_arr(
+            stats["p10"],
+            ["trnRating", "top1", "top5", "top12", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "top5", "top12", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if stats["p9"] != nil
-        squad_overview["trn"] = stats["p9"]["trnRating"]["value"]
-        squad_overview["wins"] = stats["p9"]["top1"]["value"]
-        squad_overview["kd"] = stats["p9"]["kd"]["value"]
-        squad_overview["win_rate"] = stats["p9"]["winRatio"]["value"]
-        squad_overview["matches"] = stats["p9"]["matches"]["value"]
-        squad_overview["kills"] = stats["p9"]["kills"]["value"]
-        squad_overview["kpg"] = stats["p9"]["kpg"]["value"]
+
+        squad_overview = build_ftn_arr(
+            stats["p9"],
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if stats["curr_p2"] != nil
-        season_solo["trn"] = stats["curr_p2"]["trnRating"]["value"]
-        season_solo["wins"] = stats["curr_p2"]["top1"]["value"]
-        season_solo["kd"] = stats["curr_p2"]["kd"]["value"]
-        season_solo["win_rate"] = stats["curr_p2"]["winRatio"]["value"]
-        season_solo["matches"] = stats["curr_p2"]["matches"]["value"]
-        season_solo["kills"] = stats["curr_p2"]["kills"]["value"]
-        season_solo["kpg"] = stats["curr_p2"]["kpg"]["value"]
+
+        season_solo = build_ftn_arr(
+            stats["curr_p2"],
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if stats["curr_p10"] != nil
-        season_duo["trn"] = stats["curr_p10"]["trnRating"]["value"]
-        season_duo["wins"] = stats["curr_p10"]["top1"]["value"]
-        season_duo["kd"] = stats["curr_p10"]["kd"]["value"]
-        season_duo["win_rate"] = stats["curr_p10"]["winRatio"]["value"]
-        season_duo["matches"] = stats["curr_p10"]["matches"]["value"]
-        season_duo["kills"] = stats["curr_p10"]["kills"]["value"]
-        season_duo["kpg"] = stats["curr_p10"]["kpg"]["value"]
+
+        season_duo = build_ftn_arr(
+            stats["curr_p10"],
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if stats["curr_p9"] != nil
-        season_squad["trn"] = stats["curr_p9"]["trnRating"]["value"]
-        season_squad["wins"] = stats["curr_p9"]["top1"]["value"]
-        season_squad["kd"] = stats["curr_p9"]["kd"]["value"]
-        season_squad["win_rate"] = stats["curr_p9"]["winRatio"]["value"]
-        season_squad["matches"] = stats["curr_p9"]["matches"]["value"]
-        season_squad["kills"] = stats["curr_p9"]["kills"]["value"]
-        season_squad["kpg"] = stats["curr_p9"]["kpg"]["value"]
+
+        season_squad = build_ftn_arr(
+            stats["curr_p9"],
+            ["trnRating", "top1", "kd", "winRatio", "matches", "kills", "kpg"],
+            ["trn",       "wins", "kd", "win_rate", "matches", "kills", "kpg"]
+        )
     end
 
     if json["lifeTimeStats"] != nil
-        lifetime["matches"] = json["lifeTimeStats"][7]["value"]
-        lifetime["wins"] = json["lifeTimeStats"][8]["value"]
-        lifetime["win_rate"] = json["lifeTimeStats"][9]["value"]
-        lifetime["kills"] = json["lifeTimeStats"][10]["value"]
-        lifetime["kd"] = json["lifeTimeStats"][11]["value"]
+        
+        lifetime = build_ftn_arr(
+            json["lifeTimeStats"],
+            [7, 8, 9, 10, 11],
+            ["matches", "wins", "win_rate", "kills", "kd"]
+        )
     end
 
 
