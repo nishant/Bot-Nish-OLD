@@ -349,11 +349,11 @@ def fn_shop(event)
         end
     end
 
-    # urls = []
-    # items.each do |k,v|
-    #     urls << v["imageUrl"]
-    # end
-    # urls.each { |url| download_image(url, url.split('/').last) }
+    urls = []
+    items.each do |k,v|
+        urls << v["imageUrl"]
+    end
+    urls.each { |url| download_image(url, url.split('/').last) }
 end
 
 def download_image(url, dest)

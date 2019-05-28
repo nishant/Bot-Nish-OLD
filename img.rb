@@ -1,7 +1,9 @@
 require 'rmagick'
 include Magick
 
+image_made = 0;
 
+if image_made != 1
 		#this will be the final image
 	big_image = ImageList.new
 
