@@ -46,19 +46,29 @@ bot.command(:weather) do |event|
     response = open(request).readlines.join
     weather_data = JSON.parse(response)
 
-    to_print = []
-    to_print << "Location: ............. " + weather_data["name"].to_s.downcase
-    to_print << "Temperature: ..... " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F'
-    to_print << "Weather: ............. " + weather_data["weather"][0]["main"].to_s.downcase
-    to_print << "Description: ........ " + weather_data["weather"][0]["description"].to_s
-    to_print << "Humidity: ............ " + weather_data["main"]["humidity"].to_s + '%'
-    to_print << "Low: ...................... " + kelvin_to_fahrenheit(weather_data["main"]["temp_min"]).to_s + ' °F'
-    to_print << "High: ..................... " + kelvin_to_fahrenheit(weather_data["main"]["temp_max"]).to_s + ' °F'
-    to_print << "Wind: ................... " + weather_data["wind"]["speed"].to_s + " mph"
-    to_print << "Sunrise: ................ " + Time.at((weather_data["sys"]["sunrise"].to_f)).strftime("%l:%M %p").to_s.lstrip()
-    to_print << "Sunset: ................. " + Time.at((weather_data["sys"]["sunset"].to_f)).strftime("%l:%M %p").to_s.lstrip()
+    event.channel.send_embed("") do |embed|
+        embed.timestamp = Time.now
+        
+        embed.footer = Discordrb::Webhooks::EmbedFooter.new(
+            text: "Open Weather Map", 
+            icon_url: "https://cdn1.iconfinder.com/data/icons/weather-elements/512/Weather_SunAbstract.png"
+        )
 
-    event.respond to_print.join("\n")
+        embed.add_field(
+            name: "Weather Data for #{zip}: ",
+            value:  "Location: ..................... " + weather_data["name"].to_s.downcase + "\n" +
+                    "Temperature: ............. " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F' + "\n" +
+                    "Weather: ..................... " + weather_data["weather"][0]["main"].to_s.downcase + "\n" +
+                    "Description: ................ " + weather_data["weather"][0]["description"].to_s + "\n" +
+                    "Humidity: .................... " + weather_data["main"]["humidity"].to_s + '%' + "\n" +
+                    "Low: .............................. " + kelvin_to_fahrenheit(weather_data["main"]["temp_min"]).to_s + ' °F' + "\n" +
+                    "High: ............................. " + kelvin_to_fahrenheit(weather_data["main"]["temp_max"]).to_s + ' °F' + "\n" +
+                    "Wind: ........................... " + weather_data["wind"]["speed"].to_s + " mph" + "\n" +
+                    "Sunrise: ........................ " + Time.at((weather_data["sys"]["sunrise"].to_f)).strftime("%l:%M %p").to_s.lstrip() + "\n" +
+                    "Sunset: ......................... " + Time.at((weather_data["sys"]["sunset"].to_f)).strftime("%l:%M %p").to_s.lstrip() + "\n",
+            inline: true
+        )
+    end
 end
 
 bot.command(:stock) do |event|
@@ -265,7 +275,6 @@ def fn_stats(event)
             inline: true
         )
 
-
         embed.add_field(
             name: "\uFEFF",
             value:  "\uFEFF",
@@ -327,20 +336,29 @@ def fn_shop(event)
         embed.timestamp = Time.now
         
         embed.footer = Discordrb::Webhooks::EmbedFooter.new(
-            text: "Data from Fortnite Tracker\nItem Details at FNBR", 
+            text: "Data from Fortnite Tracker & FNBR", 
             icon_url: "https://image.fnbr.co/price/icon_vbucks_50x.png"
         )
 
         items.each do |k,v|
             embed.add_field(
-                name: "Name .......... " + v["name"],
-                value: "Price ........... " + v["vBucks"].to_s,
+                name: v["name"],
+                value: v["vBucks"].to_s + " vBucks",
                 inline: true
             )
         end
     end
-    items.each do |k,v|
-        event.send(v["imageUrl"])
+
+    # urls = []
+    # items.each do |k,v|
+    #     urls << v["imageUrl"]
+    # end
+    # urls.each { |url| download_image(url, url.split('/').last) }
+end
+
+def download_image(url, dest)
+    open(url) do |u|
+        File.open(dest, 'wb') { |f| f.write(u.read) }
     end
 end
 

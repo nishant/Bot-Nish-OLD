@@ -1,23 +1,42 @@
-require "mini_magick"
+require 'rmagick'
+include Magick
 
 
+		#this will be the final image
+	big_image = ImageList.new
+
+	#this is an image containing first row of images
+	first_row = ImageList.new
+	#this is an image containing second row of images
+	second_row = ImageList.new
+
+	#adding images to the first row (Image.read returns an Array, this is why .first is needed)
+	imgs_only = []
+
+	Dir.entries(".").each do |e|
+		imgs_only << e if e[-3..-1] == 'png'
+	end
+
+	num_imgs = imgs_only.size
+
+	imgs_only[0..num_imgs / 2].each do |e|
+		first_row.push(Image.read(e).first)
+	end
 
 
+	#adding first row to big image and specify that we want images in first row to be appended in a single image on the same row - argument false on append does that
+	big_image.push (first_row.append(false))
 
-# bg = Image.new(1000,1000) { self.background_color = "black" }
+	#same thing for second row
+	imgs_only[((num_imgs/2)+1)..-1].each do |e|
+		second_row.push(Image.read(e).first)
+	end
 
-# image1 = Magick::ImageList.new("wrap.png")
-# image2 = Magick::ImageList.new("wrap.png")
-# image3 = Magick::ImageList.new("wrap.png")
-# thumbnail = image1.thumbnail(image1.columns*0.09, image1.rows*0.09)
-# urlimage = "https://cdn.thetrackernetwork.com/cdn/fortnite/81E011683_large.png"
-# x = Magick::Image.from_blob(urlimage)
-# image.write('a.png')
-# bg.composite!(thumbnail, 0,   0, OverCompositeOp)
-# bg.composite!(thumbnail, 0,   50, OverCompositeOp)
-# bg.composite!(thumbnail, 0, 100, OverCompositeOp)
-# bg.composite!(thumbnail, 50,   0, OverCompositeOp)
-# bg.composite!(thumbnail, 50,   50, OverCompositeOp)
-# bg.composite!(thumbnail, 50,   100, OverCompositeOp)
+	big_image.push(second_row.append(false))
 
-# bg.write('collage.png')
+	#now we are saving the final image that is composed from 2 images by sepcify append with argument true meaning that each image will be on a separate row
+	big_image.append(true).write("big_image.png")
+	image_made = 1
+end
+
+
