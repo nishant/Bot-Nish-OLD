@@ -26,9 +26,9 @@ def create_embed(embed, zip, weather_data)
 		text: "Open Weather Map", 
 		icon_url: "https://cdn1.iconfinder.com/data/icons/weather-elements/512/Weather_SunAbstract.png"
 	)
-	
+
 	embed.add_field(
-		name: "\uFEFF",
+		name: "Current Weather for #{zip}",
 		value:  "Location: ..................... " + weather_data["name"].to_s.downcase + "\n" +
 				"Temperature: ............. " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F' + "\n" +
 				"Weather: ..................... " + weather_data["weather"][0]["main"].to_s.downcase + "\n" +
