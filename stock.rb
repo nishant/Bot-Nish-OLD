@@ -1,6 +1,6 @@
 def process_stock(bot)
 	bot.command(:stock) do |event|
-		api_key = '3KT67VI8256BBOXC'
+		api_key = get_stock_api_key()
 		keyword = event.message.content.sub("%stock", "")
 		request = "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=#{keyword}&apikey=#{api_key}"
 		response = open(request).readlines.join

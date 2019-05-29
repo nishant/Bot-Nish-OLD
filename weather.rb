@@ -4,7 +4,7 @@ end
 
 def process_weather(bot)
 	bot.command(:weather) do |event|
-		api_key = '5be3960bf306ce17c9c742f07c351972'
+		api_key = get_weather_api_key()
 		zip = event.message.content.split(' ')[1]
 
 		request = "http://api.openweathermap.org/data/2.5/weather?zip=#{zip}&APPID=#{api_key}"
@@ -12,12 +12,12 @@ def process_weather(bot)
 		weather_data = JSON.parse(response)
 	
 		event.channel.send_embed("") do |embed|
-			create_embed(embed, zip, weather_data)
+			create_weather_embed(embed, zip, weather_data)
 		end
 	end
 end
 
-def create_embed(embed, zip, weather_data)
+def create_weather_embed(embed, zip, weather_data)
 	embed.title = "Weather Data for #{zip}"
 	embed.url = URI.encode("https://www.google.com/search?q=weather+#{zip}")
 	embed.timestamp = Time.now
