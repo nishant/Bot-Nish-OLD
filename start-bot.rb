@@ -47,6 +47,8 @@ bot.command(:weather) do |event|
     weather_data = JSON.parse(response)
 
     event.channel.send_embed("") do |embed|
+        embed.title = "Weather Data for #{zip}"
+        embed.url = URI.encode("https://www.google.com/search?q=weather+#{zip}")
         embed.timestamp = Time.now
         
         embed.footer = Discordrb::Webhooks::EmbedFooter.new(
@@ -55,7 +57,7 @@ bot.command(:weather) do |event|
         )
 
         embed.add_field(
-            name: "Weather Data for #{zip}: ",
+            name: "\uFEFF",
             value:  "Location: ..................... " + weather_data["name"].to_s.downcase + "\n" +
                     "Temperature: ............. " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F' + "\n" +
                     "Weather: ..................... " + weather_data["weather"][0]["main"].to_s.downcase + "\n" +
@@ -77,17 +79,19 @@ bot.command(:stock) do |event|
     request = "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=#{keyword}&apikey=#{api_key}"
     response = open(request).readlines.join
     search_data = JSON.parse(response)
-    to_print = []
 
+    to_print = []
     to_print << "Company ...... " + search_data["bestMatches"][0]["2. name"]
     to_print << "Symbol .......... " + search_data["bestMatches"][0]["1. symbol"]
 
     symbol = search_data["bestMatches"][0]["1. symbol"]
+
     request = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{symbol}&apikey=#{api_key}"
     response = open(request).readlines.join
     stock_data = JSON.parse(response)
+    
+    most_recent = stock_data["Meta Data"]["3. Last Refreshed"].split(' ')[0]
 
-    most_recent = stock_data["Meta Data"]["3. Last Refreshed"]
     info = stock_data["Time Series (Daily)"][most_recent]
     
     to_print << "Open .............. " + '%.2f' % info["1. open"].to_f.ceil(2)
@@ -149,6 +153,7 @@ def fn_stats(event)
         )
     end
 
+    puts stats["curr_p2"]
     if stats["curr_p2"] != nil
         season_solo = build_fn_arr(
             stats["curr_p2"],
@@ -213,7 +218,7 @@ def fn_stats(event)
                     "Kills .......................... " + season_kills + "\n" +
                     "K/D .......................... " + season_kd + "\n" +
                     "Win Rate ................. " + season_win_rate + "%\n" +
-                    "Matches ..................c " + season_matches + "\n",
+                    "Matches .................. " + season_matches + "\n",
             inline: true
         )
 
@@ -234,17 +239,31 @@ def fn_stats(event)
             inline: true
         )
 
-        embed.add_field(
-            name: "Season Solos",
-            value:  "Wins ......................... " + season_solo["wins"] + "\n" +
-                    "Kills ........................... " + season_solo["kills"] + "\n" +
-                    "K/D ........................... " + season_solo["kd"] + "\n" +
-                    "Win Rate .................. " + season_solo["win_rate"] + "%\n" +
-                    "Matches ................... " + season_solo["matches"] + "\n" +
-                    "Kills Per Match ....... " + season_solo["kpg"] + "\n" +
-                    "TRN ........................... " + season_solo["trn"] + "\n",
-            inline: true
-        )
+        if stats["curr_p2"] == nil
+            embed.add_field(
+                name: "Season Solos",
+                value:  "Wins ......................... 0" + "\n" +
+                "Kills ........................... 0" + "\n" +
+                "K/D ........................... 0" + "\n" +
+                "Win Rate .................. 0" + "%\n" +
+                "Matches ................... 0" + "\n" +
+                "Kills Per Match ....... 0" + "\n" +
+                "TRN ........................... DNE" + "\n",
+                inline: true
+            )
+        else
+            embed.add_field(
+                name: "Season Solos",
+                value:  "Wins ......................... " + season_solo["wins"] + "\n" +
+                        "Kills ........................... " + season_solo["kills"] + "\n" +
+                        "K/D ........................... " + season_solo["kd"] + "\n" +
+                        "Win Rate .................. " + season_solo["win_rate"] + "%\n" +
+                        "Matches ................... " + season_solo["matches"] + "\n" +
+                        "Kills Per Match ....... " + season_solo["kpg"] + "\n" +
+                        "TRN ........................... " + season_solo["trn"] + "\n",
+                inline: true
+            )
+        end
         
         embed.add_field(
             name: "\uFEFF",
