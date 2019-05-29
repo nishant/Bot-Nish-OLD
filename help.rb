@@ -13,7 +13,7 @@ def create_help_embed(embed)
 
 	embed.footer = Discordrb::Webhooks::EmbedFooter.new(
 		text: "Made by Nishant Arora", 
-		icon_url: "https://brand.umd.edu/img/New_UMD_Globe.png"
+		icon_url: "https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/University_of_Maryland_seal.svg/1200px-University_of_Maryland_seal.svg.png"
 	)
 
 	embed.add_field(
