@@ -4,6 +4,7 @@ require 'json'
 require 'psych'
 require 'httparty'
 
+require_relative 'secrets.rb'
 require_relative 'help.rb'
 require_relative 'misc.rb'
 require_relative 'weather.rb'
@@ -11,7 +12,7 @@ require_relative 'stock.rb'
 require_relative 'fortnite.rb'
 
 bot = Discordrb::Commands::CommandBot.new(
-    token: 'NTgxOTA5OTM3MTY5NjI5MTk1.XOmOyA.6obFYsF1bBd2_KNiXALvSXqNG7g',
+    token: get_discord_token(),
     client_id: 359082109119365140,
     prefix: '%'
 )

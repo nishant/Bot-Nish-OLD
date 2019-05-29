@@ -72,7 +72,7 @@ def fn_stats(event)
     all_data[:username] = event.message.content.split(' ')[2..-1].join(" ")
     
     url = URI.encode("https://api.fortnitetracker.com/v1/profile/#{all_data[:platform]}/#{all_data[:username]}/")
-    headers = {"TRN-Api-Key": "4e622ec4-f903-49ee-92b6-cbdf5c2c5488"}
+    headers = {"TRN-Api-Key": get_fn_api_key()}
     response = HTTParty.get(url, headers: headers)
 
     json = JSON.parse(response.body)
@@ -254,7 +254,7 @@ end
 
 def fn_shop(event)
     url = URI.encode("https://api.fortnitetracker.com/v1/store/")
-    headers = {"TRN-Api-Key": "4e622ec4-f903-49ee-92b6-cbdf5c2c5488"}
+    headers = {"TRN-Api-Key": get_fn_api_key()}
     response = HTTParty.get(url, headers: headers)
 
     items = JSON.parse(response.body)
