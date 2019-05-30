@@ -6,10 +6,6 @@ def process_stock(bot)
 		response = open(request).readlines.join
 		search_data = JSON.parse(response)
 	
-		to_print = []
-		to_print << "Company ...... " + search_data["bestMatches"][0]["2. name"]
-		to_print << "Symbol .......... " + search_data["bestMatches"][0]["1. symbol"]
-	
 		symbol = search_data["bestMatches"][0]["1. symbol"]
 	
 		request = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{symbol}&apikey=#{api_key}"
@@ -20,11 +16,30 @@ def process_stock(bot)
 	
 		info = stock_data["Time Series (Daily)"][most_recent]
 		
-		to_print << "Open .............. " + '%.2f' % info["1. open"].to_f.ceil(2)
-		to_print << "Close .............. " + '%.2f' % info["4. close"].to_f.ceil(2).to_s
-		to_print << "High ................ " + '%.2f' % info["2. high"].to_f.ceil(2).to_s
-		to_print << "Low ................. " + '%.2f' % info["3. low"].to_f.ceil(2).to_s
-	
-		event.respond to_print.join("\n")
+		event.channel.send_embed("") do |embed|
+			create_stock_embed(embed, symbol, search_data, info)
+		end
 	end
+end
+
+def create_stock_embed(embed, symbol, search_data, info)
+	embed.title = "Stock Data for #{symbol}"
+	embed.url = URI.encode("https://www.google.com/search?q=stock+#{symbol.upcase}")
+	embed.timestamp = Time.now
+	
+	embed.footer = Discordrb::Webhooks::EmbedFooter.new(
+		text: "Alpha Vantage", 
+		icon_url: "http://pngimg.com/uploads/dollar_sign/dollar_sign_PNG21539.png"
+	)
+
+	embed.add_field(
+		name: "Stock Data:",
+		value:  "Company .................. " + search_data["bestMatches"][0]["2. name"] + "\n" +
+				"Symbol ...................... " + search_data["bestMatches"][0]["1. symbol"] + "\n" +
+				"Open .......................... " + '%.2f' % info["1. open"].to_f.ceil(2).to_s + "\n" +
+				"Close .......................... " + '%.2f' % info["4. close"].to_f.ceil(2).to_s + "\n" +
+				"High ............................ " + '%.2f' % info["2. high"].to_f.ceil(2).to_s + "\n" +
+				"Low ............................. " + '%.2f' % info["3. low"].to_f.ceil(2).to_s + "\n",
+		inline: true
+	)
 end

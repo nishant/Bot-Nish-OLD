@@ -28,7 +28,7 @@ def create_weather_embed(embed, zip, weather_data)
 	)
 
 	embed.add_field(
-		name: "Current Weather for #{zip}",
+		name: "Current Weather:",
 		value:  "Location: ..................... " + weather_data["name"].to_s.downcase + "\n" +
 				"Temperature: ............. " + kelvin_to_fahrenheit(weather_data["main"]["temp"]).to_s + ' °F' + "\n" +
 				"Weather: ..................... " + weather_data["weather"][0]["main"].to_s.downcase + "\n" +
