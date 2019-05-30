@@ -39,4 +39,12 @@ def create_help_embed(embed)
 		value: "Gets all items in the item shop (pics coming soon).",
 		inline: false
 	)
+
+	embed.add_field(
+		name: spacer + "math <expr> OR math <func>(<list>)",
+		value: "Evaluates mathematical expressions.
+				Supported operators: +  -  *  /  %  ^  |  &  <  >  <=  >=  !=  =,
+				Supported functions: min, max, sum, avg, count, round \(up/down\)",
+		inline: false
+	)
 end

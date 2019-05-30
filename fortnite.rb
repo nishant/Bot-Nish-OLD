@@ -313,3 +313,11 @@ def build_fn_arr(base, source_keys, dst_keys)
     
     return output
 end
+
+def add_spacer(embed)
+	embed.add_field(
+		name: "\uFEFF",
+		value:  "\uFEFF",
+		inline: true
+	)
+end
