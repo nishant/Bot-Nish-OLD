@@ -47,4 +47,12 @@ def create_help_embed(embed)
 				Supported functions: min, max, sum, avg, count, round \(up/down\)",
 		inline: false
 	)
+
+	embed.add_field(
+		name: spacer + "ygo find <keyword> OR ygo <exact_card_name>",
+		value: "Finds and retrieves Yugioh card info based on properly spelled/capitalized card name.
+				Use the find command to get a list of all cards with <keyword> in the name.
+				Use this result to lookup card info based with it's exact name.",
+		inline: false
+	)
 end
