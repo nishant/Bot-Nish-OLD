@@ -39,9 +39,8 @@ def play_media(event, query)
 		event.voice.adjust_average = true
 		event.voice.adjust_interval = 150
 
-
 		event.voice.play_file("./media/file#{num_file}")
-		
+
 		system("rm ./media/file#{num_file}")
 
 		if event.voice != nil
