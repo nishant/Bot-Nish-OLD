@@ -1,11 +1,51 @@
 def process_fn(bot)
 	bot.command(:fn) do |event|
-		if event.message.content.split(' ')[1] == 'shop'
-			fn_shop(event)
-		else
-			fn_stats(event)
-		end
+		cmd = event.message.content.split(' ')[1]
+		fn_shop(event) if cmd == 'shop'
+		fn_drop(event) if cmd == 'drop'
+		fn_stats(event) if (cmd == 'xbl' || cmd == 'pc' || cmd == 'psn')
 	end
+end
+
+def fn_drop(event)
+	event.channel.send_embed("") do |embed|
+		create_drop_embed(embed)
+    end
+end
+
+def create_drop_embed(embed)
+	all_locations = [
+        "Junk Junction", "Haunted Hills", "The Block",
+        "Pleasant Park", "Snobby Shores", "Loot Lake",
+        "Neo Tilted", "Shifty Shafts", "Polar Peak",
+        "Frosty Flights", "Happy Hamlet", "Lucky Landing",
+        "Fatal Fields", "Salty Springs", "Dusty Divot",
+        "Paradise Palms", "Mega Mall", "Lonely Lodge",
+        "Sunny Steps", "Lazy Lagoon", "Pueblito",
+        "Viking Village", "Greasy Lake",
+        "Gus", "Pressure Plant"
+    ]
+
+    common_locations = [
+        "Pleasant Park", "Dusty Divot", "Salty Springs",
+        "Paradise Palms", "Shifty Shafts", "Pueblito", "Viking Village"
+	]
+
+	embed.title = "Drop Location:"
+	
+	idx = rand((0...all_locations.size))
+	embed.add_field(
+		name: "From All Possible Drops:",
+		value: "    " + all_locations.shuffle[idx] + "\n",
+		inline: false
+	)
+
+	idx = rand((0...common_locations.size))
+	embed.add_field(
+		name: "From Our Common Drops:",
+		value: "    " + common_locations.shuffle[idx] + "\n\n",
+		inline: false
+	)
 end
 
 def get_stats_data(all_data, json)
@@ -103,15 +143,28 @@ def create_stats_embed(embed, all_data)
 		icon_url: "https://img.icons8.com/color/420/fortnite.png"
 	)
 
-	embed.add_field(
-		name: "Lifetime Overview",
-		value:  "Wins ........................ " + all_data[:lifetime]["wins"] + "\n" +
-				"Kills .......................... " + all_data[:lifetime]["kills"] + "\n" +
-				"K/D .......................... " + all_data[:lifetime]["kd"] + "\n" +
-				"Win Rate ................. " + all_data[:lifetime]["win_rate"] + "\n" +
-				"Matches .................. " + all_data[:lifetime]["matches"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["p2"] == nil && all_data[:stats]["p10"] == nil && all_data[:stats]["p9"] == nil
+		embed.add_field(
+			name: "Lifetime Overview",
+			value:  "Wins ........................ 0" + "\n" +
+					"Kills .......................... 0" + "\n" +
+					"K/D .......................... 0" + "\n" +
+					"Win Rate ................. 0" + "\n" +
+					"Matches .................. 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Lifetime Overview",
+			value:  "Wins ........................ " + all_data[:lifetime]["wins"] + "\n" +
+					"Kills .......................... " + all_data[:lifetime]["kills"] + "\n" +
+					"K/D .......................... " + all_data[:lifetime]["kd"] + "\n" +
+					"Win Rate ................. " + all_data[:lifetime]["win_rate"] + "\n" +
+					"Matches .................. " + all_data[:lifetime]["matches"] + "\n",
+			inline: true
+		)
+	end
+
 	season_solo = all_data[:season_solo]
 	season_duo = all_data[:season_duo]
 	season_squad = all_data[:season_squad]
@@ -122,15 +175,27 @@ def create_stats_embed(embed, all_data)
 	season_kills = (season_solo["kills"].to_i + season_duo["kills"].to_i + season_squad["kills"].to_i).to_s
 	season_kd = (season_kills.to_f / (season_matches.to_f - season_wins.to_f)).ceil(2).to_s
 
-	embed.add_field(
-		name: "Season Overview",
-		value:  "Wins ........................ " + season_wins + "\n" +
-				"Kills .......................... " + season_kills + "\n" +
-				"K/D .......................... " + season_kd + "\n" +
-				"Win Rate ................. " + season_win_rate + "%\n" +
-				"Matches .................. " + season_matches + "\n",
-		inline: true
-	)
+	if all_data[:stats]["curr_p2"] == nil && all_data[:stats]["curr_p10"] == nil && all_data[:stats]["curr_pp9"] == nil
+		embed.add_field(
+			name: "Season Overview",
+			value:  "Wins ........................ 0" + "\n" +
+					"Kills .......................... 0" + "\n" +
+					"K/D .......................... 0" + "\n" +
+					"Win Rate ................. 0" + "%\n" +
+					"Matches .................. 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Season Overview",
+			value:  "Wins ........................ " + season_wins + "\n" +
+					"Kills .......................... " + season_kills + "\n" +
+					"K/D .......................... " + season_kd + "\n" +
+					"Win Rate ................. " + season_win_rate + "%\n" +
+					"Matches .................. " + season_matches + "\n",
+			inline: true
+		)
+	end
 
 	embed.add_field(
 		name: "\uFEFF",
@@ -138,16 +203,29 @@ def create_stats_embed(embed, all_data)
 		inline: true
 	)
 
-	embed.add_field(
-		name: "Lifetime Solos",
-		value:  "Wins ......................... " + all_data[:solo_overview]["wins"] + "\n" +
-				"Kills ........................... " + all_data[:solo_overview]["kills"] + "\n" +
-				"K/D ........................... " + all_data[:solo_overview]["kd"] + "\n" +
-				"Win Rate .................. " + all_data[:solo_overview]["win_rate"] + "%\n" +
-				"Matches ................... " + all_data[:solo_overview]["matches"] + "\n" +
-				"Kills Per Match ....... " + all_data[:solo_overview]["kpg"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["p2"] == nil
+		embed.add_field(
+			name: "Lifetime Solos",
+			value:  "Wins ......................... 0" + "\n" +
+					"Kills ........................... 0" + "\n" +
+					"K/D ........................... 0" + "\n" +
+					"Win Rate .................. 0" + "%\n" +
+					"Matches ................... 0" + "\n" +
+					"Kills Per Match ....... 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Lifetime Solos",
+			value:  "Wins ......................... " + all_data[:solo_overview]["wins"] + "\n" +
+					"Kills ........................... " + all_data[:solo_overview]["kills"] + "\n" +
+					"K/D ........................... " + all_data[:solo_overview]["kd"] + "\n" +
+					"Win Rate .................. " + all_data[:solo_overview]["win_rate"] + "%\n" +
+					"Matches ................... " + all_data[:solo_overview]["matches"] + "\n" +
+					"Kills Per Match ....... " + all_data[:solo_overview]["kpg"] + "\n",
+			inline: true
+		)
+	end
 
 	if all_data[:stats]["curr_p2"] == nil
 		embed.add_field(
@@ -181,28 +259,55 @@ def create_stats_embed(embed, all_data)
 		inline: true
 	)
 
-	embed.add_field(
-		name: "Lifetime Duos",
-		value:  "Wins ......................... " + all_data[:duo_overview]["wins"] + "\n" +
-				"Kills ........................... " + all_data[:duo_overview]["kills"] + "\n" +
-				"K/D ........................... " + all_data[:duo_overview]["kd"] + "\n" +
-				"Win Rate .................. " + all_data[:duo_overview]["win_rate"] + "%\n" +
-				"Matches ................... " + all_data[:duo_overview]["matches"] + "\n" +
-				"Kills Per Match ....... " + all_data[:duo_overview]["kpg"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["p10"] == nil
+		embed.add_field(
+			name: "Lifetime Duos",
+			value:  "Wins ......................... 0" + "\n" +
+					"Kills ........................... 0" + "\n" +
+					"K/D ........................... 0" + "\n" +
+					"Win Rate .................. 0" + "%\n" +
+					"Matches ................... 0" + "\n" +
+					"Kills Per Match ....... 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Lifetime Duos",
+			value:  "Wins ......................... " + all_data[:duo_overview]["wins"] + "\n" +
+					"Kills ........................... " + all_data[:duo_overview]["kills"] + "\n" +
+					"K/D ........................... " + all_data[:duo_overview]["kd"] + "\n" +
+					"Win Rate .................. " + all_data[:duo_overview]["win_rate"] + "%\n" +
+					"Matches ................... " + all_data[:duo_overview]["matches"] + "\n" +
+					"Kills Per Match ....... " + all_data[:duo_overview]["kpg"] + "\n",
+			inline: true
+		)
+	end
 
-	embed.add_field(
-		name: "Season Duos",
-		value:  "Wins ......................... " + season_duo["wins"] + "\n" +
-				"Kills ........................... " + season_duo["kills"] + "\n" +
-				"K/D ........................... " + season_duo["kd"] + "\n" +
-				"Win Rate .................. " + season_duo["win_rate"] + "%\n" +
-				"Matches ................... " + season_duo["matches"] + "\n" +
-				"Kills Per Match ....... " + season_duo["kpg"] + "\n" +
-				"TRN ........................... " + season_duo["trn"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["curr_p10"] == nil
+		embed.add_field(
+			name: "Season Duos",
+			value:  "Wins ......................... 0" + "\n" +
+					"Kills ........................... 0" + "\n" +
+					"K/D ........................... 0" + "\n" +
+					"Win Rate .................. 0" + "%\n" +
+					"Matches ................... 0" + "\n" +
+					"Kills Per Match ....... 0" + "\n" +
+					"TRN ........................... 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Season Duos",
+			value:  "Wins ......................... " + season_duo["wins"] + "\n" +
+					"Kills ........................... " + season_duo["kills"] + "\n" +
+					"K/D ........................... " + season_duo["kd"] + "\n" +
+					"Win Rate .................. " + season_duo["win_rate"] + "%\n" +
+					"Matches ................... " + season_duo["matches"] + "\n" +
+					"Kills Per Match ....... " + season_duo["kpg"] + "\n" +
+					"TRN ........................... " + season_duo["trn"] + "\n",
+			inline: true
+		)
+	end
 
 	embed.add_field(
 		name: "\uFEFF",
@@ -210,28 +315,55 @@ def create_stats_embed(embed, all_data)
 		inline: true
 	)
 
-	embed.add_field(
-		name: "Lifetime Squads",
-		value:  "Wins ......................... " + all_data[:squad_overview]["wins"] + "\n" +
-				"Kills ........................... " + all_data[:squad_overview]["kills"] + "\n" +
-				"K/D ........................... " + all_data[:squad_overview]["kd"] + "\n" +
-				"Win Rate .................. " + all_data[:squad_overview]["win_rate"] + "%\n" +
-				"Matches ................... " + all_data[:squad_overview]["matches"] + "\n" +
-				"Kills Per Match ....... " + all_data[:squad_overview]["kpg"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["p9"] == nil
+		embed.add_field(
+			name: "Lifetime Squads",
+			value:  "Wins ......................... 0" + "\n" +
+					"Kills ........................... 0" + "\n" +
+					"K/D ........................... 0" + "\n" +
+					"Win Rate .................. 0" + "%\n" +
+					"Matches ................... 0" + "\n" +
+					"Kills Per Match ....... 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Lifetime Squads",
+			value:  "Wins ......................... " + all_data[:squad_overview]["wins"] + "\n" +
+					"Kills ........................... " + all_data[:squad_overview]["kills"] + "\n" +
+					"K/D ........................... " + all_data[:squad_overview]["kd"] + "\n" +
+					"Win Rate .................. " + all_data[:squad_overview]["win_rate"] + "%\n" +
+					"Matches ................... " + all_data[:squad_overview]["matches"] + "\n" +
+					"Kills Per Match ....... " + all_data[:squad_overview]["kpg"] + "\n",
+			inline: true
+		)
+	end
 	
-	embed.add_field(
-		name: "Season Squads",
-		value:  "Wins ......................... " + season_squad["wins"] + "\n" +
-				"Kills ........................... " + season_squad["kills"] + "\n" +
-				"K/D ........................... " + season_squad["kd"] + "\n" +
-				"Win Rate .................. " + season_squad["win_rate"] + "%\n" +
-				"Matches ................... " + season_squad["matches"] + "\n" +
-				"Kills Per Match ....... " + season_squad["kpg"] + "\n" +
-				"TRN ........................... " + season_squad["trn"] + "\n",
-		inline: true
-	)
+	if all_data[:stats]["curr_p9"] == nil
+		embed.add_field(
+			name: "Season Squads",
+			value:  "Wins ......................... 0" + "\n" +
+					"Kills ........................... 0" + "\n" +
+					"K/D ........................... 0" + "\n" +
+					"Win Rate .................. 0" + "%\n" +
+					"Matches ................... 0" + "\n" +
+					"Kills Per Match ....... 0" + "\n" +
+					"TRN ........................... 0" + "\n",
+			inline: true
+		)
+	else
+		embed.add_field(
+			name: "Season Squads",
+			value:  "Wins ......................... " + season_squad["wins"] + "\n" +
+					"Kills ........................... " + season_squad["kills"] + "\n" +
+					"K/D ........................... " + season_squad["kd"] + "\n" +
+					"Win Rate .................. " + season_squad["win_rate"] + "%\n" +
+					"Matches ................... " + season_squad["matches"] + "\n" +
+					"Kills Per Match ....... " + season_squad["kpg"] + "\n" +
+					"TRN ........................... " + season_squad["trn"] + "\n",
+			inline: true
+		)
+	end
 
 	embed.add_field(
 		name: "\uFEFF",

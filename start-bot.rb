@@ -16,6 +16,8 @@ require_relative 'fortnite.rb'
 require_relative 'math.rb'
 require_relative 'yugioh.rb'
 # require_relative 'media.rb'
+require_relative 'generate.rb'
+
 
 bot = Discordrb::Commands::CommandBot.new(
     token: get_discord_token(),
@@ -32,5 +34,6 @@ process_fn(bot)
 process_math(bot)
 process_yugioh(bot)
 # process_media(bot)
+process_generate(bot)
 
 bot.run

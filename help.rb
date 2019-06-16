@@ -41,6 +41,12 @@ def create_help_embed(embed)
 	)
 
 	embed.add_field(
+		name: spacer + "fn drop",
+		value: "Picks a random drop location.",
+		inline: false
+	)
+
+	embed.add_field(
 		name: spacer + "math <expr> OR math <func>(<list>)",
 		value: "Evaluates mathematical expressions.
 				Supported operators: +  -  *  /  %  ^  |  &  <  >  <=  >=  !=  =,
@@ -53,6 +59,18 @@ def create_help_embed(embed)
 		value: "Finds and retrieves Yugioh card info based on properly spelled/capitalized card name.
 				Use the find command to get a list of all cards with <keyword> in the name.
 				Use this result to lookup card info based with it's exact name.",
+		inline: false
+	)
+
+	embed.add_field(
+		name: spacer + "gen pass",
+		value: "DMs you a randomly generated strong password.",
+		inline: false
+	)
+
+	embed.add_field(
+		name: spacer + "gen team <name1,name2,...> <team_size>",
+		value: "Randomly generates teams of a specified size.",
 		inline: false
 	)
 end
