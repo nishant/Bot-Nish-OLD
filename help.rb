@@ -8,6 +8,7 @@ end
 
 def create_help_embed(embed)
 	embed.title = "List of Commands: (start with %)"
+	embed.color = 0x0068f9
 	embed.timestamp = Time.now
 	spacer = "\uFEFF\n"
 
@@ -71,6 +72,12 @@ def create_help_embed(embed)
 	embed.add_field(
 		name: spacer + "gen team <name1,name2,...> <team_size>",
 		value: "Randomly generates teams of a specified size.",
+		inline: false
+	)
+
+	embed.add_field(
+		name: spacer + "%play <spotify_URI>",
+		value: "Plays music from a spotify playlist. Get the URI by clicking share playlist -> Copy Spotify URI",
 		inline: false
 	)
 end
