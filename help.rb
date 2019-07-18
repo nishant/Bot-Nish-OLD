@@ -76,8 +76,8 @@ def create_help_embed(embed)
 	)
 
 	embed.add_field(
-		name: spacer + "%play <spotify_URI>",
-		value: "Plays music from a spotify playlist. Get the URI by clicking share playlist -> Copy Spotify URI",
+		name: spacer + "%spotify <spotify_URI> <shuffle?>",
+		value: "Plays music from a spotify playlist (shuffle keyword optional). Get the URI by clicking share playlist -> Copy Spotify URI",
 		inline: false
 	)
 end

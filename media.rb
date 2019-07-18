@@ -1,18 +1,25 @@
-# def process_media(bot)
-# 	bot.command(:play) do |event|
-# 		playlist_indo = {}
-    
-# 		url = URI.encode("https://api.fortnitetracker.com/v1/profile/#{all_data[:platform]}/#{all_data[:username]}/")
-# 		headers = {"TRN-Api-Key": get_fn_api_key()}
-# 		response = HTTParty.get(url, headers: headers)
 
-# 		json = JSON.parse(response.body)
-# 		all_data[:stats] = json["stats"]
-		
-# 		event.channel.send_embed("") do |embed|
-# 			create_media_embed(embed)
-# 		end
-# 	end
-# end
+def process_spotify(bot)
+	bot.command(:spotify) do |event|
+		msg = event.message.content.split() 
 
-# def create_media_embed(embed)
+		playlist_id = msg[1].sub("spotify:playlist:", "")
+		shuffle = (msg.size == 3 && msg[2] == 'shuffle' ? true : false)
+
+		RSpotify.authenticate(get_spotify_id(), get_spotify_secret())
+		playlist = RSpotify::Playlist.find('', playlist_id)
+
+		strs = []
+	
+		playlist.tracks.each do |track|
+			artists = track.artists.map { |x| x.name}
+			strs << 'p!play ' + track.name + ' : ' + artists.join(', ')
+		end
+
+		strs.shuffle! if shuffle == true
+			
+		event.respond strs.join('\n')
+
+		event.respond "Added #{playlist.tracks.size} tracks to the queue."
+	end	
+end

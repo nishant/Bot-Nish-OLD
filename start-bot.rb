@@ -12,6 +12,8 @@ require 'psych'
 require 'httparty'
 require 'dentaku'
 require 'time'
+require 'rspotify'
+
 # require 'youtube-dl.rb'
 # require 'open3'
 
@@ -42,7 +44,7 @@ process_weather(bot)
 process_fn(bot)
 process_math(bot)
 process_yugioh(bot)
-# process_media(bot)
+process_spotify(bot)
 process_generate(bot)
 
 bot.run
